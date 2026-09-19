@@ -1,0 +1,74 @@
+{
+  "red": {
+    "mode": "chroma",
+    "h": 177,
+    "hw": 10,
+    "s_min": 61,
+    "s_max": 138,
+    "v_min": 145,
+    "v_max": 235
+  },
+  "yellow": {
+    "mode": "chroma",
+    "h": 28,
+    "hw": 10,
+    "s_min": 90,
+    "s_max": 255,
+    "v_min": 90,
+    "v_max": 255
+  },
+  "green": {
+    "mode": "chroma",
+    "h": 46,
+    "hw": 14,
+    "s_min": 63,
+    "s_max": 149,
+    "v_min": 174,
+    "v_max": 255
+  },
+  "blue": {
+    "mode": "chroma",
+    "h": 113,
+    "hw": 28,
+    "s_min": 63,
+    "s_max": 165,
+    "v_min": 127,
+    "v_max": 223
+  },
+  "lightblue": {
+    "mode": "chroma",
+    "h": 100,
+    "hw": 12,
+    "s_min": 40,
+    "s_max": 140,
+    "v_min": 120,
+    "v_max": 255
+  },
+  "black": {
+    "mode": "dark",
+    "h": 0,
+    "hw": 180,
+    "s_min": 0,
+    "s_max": 120,
+    "v_min": 0,
+    "v_max": 85
+  },
+  "custom": {
+    "mode": "chroma",
+    "h": 90,
+    "hw": 12,
+    "s_min": 60,
+    "s_max": 255,
+    "v_min": 50,
+    "v_max": 255
+  },
+  "_tune": {
+    "k_open": 1,
+    "k_close": 31,
+    "blur_k": 1,
+    "min_area_frac": 0.0,
+    "max_area_frac": 1.0,
+    "circ_min": 0.15,
+    "exposure": 30
+  }
+}

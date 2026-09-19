@@ -1,0 +1,28 @@
+/**********************************************************************
+ * chassis.h / 底盘运动模块(对角全向轮)
+ *********************************************************************/
+#ifndef CHASSIS_H
+#define CHASSIS_H
+#include <stdint.h>
+
+void Chassis_Init(void);                 /* 调用原 MOTOR3/4/7/8_Init      */
+
+/* 全部为阻塞接口:函数返回 = 动作完成(对应协议的同步应答模型) */
+void Chassis_MoveX_cm(int8_t cm);        /* 正=前进 负=后退               */
+void Chassis_MoveY_cm(int8_t cm);        /* 正=左移 负=右移               */
+void Chassis_MoveX_mm(int8_t mm);
+void Chassis_MoveY_mm(int8_t mm);
+void Chassis_Rotate_deg(int8_t deg);     /* 正=逆时针                     */
+
+/* 非阻塞版(0x0D 复合动作用):启动后立即返回 */
+void Chassis_MoveX_cm_Async(int8_t cm);
+void Chassis_WaitDone(void);
+
+/* 演示循环:前进→后退→左移→右移→左旋→右旋,每段后停顿,无限循环 */
+void Chassis_DemoCycle(void);
+
+/* 演示循环2: MOTOR1~8 依次正转一圈→停止→下一个,无限循环
+ * 纯 GPIO 脉冲,绕开 ramp 引擎(每根轴只写通道组,无法单电机独立转) */
+void Chassis_DemoCycle_2(void);
+
+#endif

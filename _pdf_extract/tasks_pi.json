@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "▶ 圆环检测+数字识别 (推流 8080)",
+      "type": "shell",
+      "command": "python3 -u ring_center_detect_v2.py --stream",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "▶ 二维码识别 (推流 8080)",
+      "type": "shell",
+      "command": "python3 -u qr_stream_demo.py --stream",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "✔ 测试: 旋转回归 (1/2/3 × 12角度)",
+      "type": "shell",
+      "command": "python3 -u test_rotation.py",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "✔ 测试: 虚线环 (φ1/φ2φ5 虚线场景)",
+      "type": "shell",
+      "command": "python3 -u test_dashed.py",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "✔ 测试: 窗口众数稳定性 (5场景)",
+      "type": "shell",
+      "command": "python3 -u test_stability.py",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "生成测试二维码 test_qr.png",
+      "type": "shell",
+      "command": "python3 -u gen_test_qr.py",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    }
+  ]
+}
