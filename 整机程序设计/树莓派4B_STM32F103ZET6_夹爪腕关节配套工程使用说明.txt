@@ -1,0 +1,263 @@
+树莓派4B + STM32F103ZET6 夹爪/腕关节配套工程使用说明
+============================================================
+
+一、工程说明
+
+这是一套命令完全配套的树莓派上位机与STM32下位机工程。
+
+工程严格基于用户提供的两份原始压缩包：
+
+1. car_code_upper_fixed.zip
+   SHA-256:
+   0852C8DDD9045A9D453C01CF2E5067F57C1FE63745AE1287BC2F112F8A458EDF
+
+2. car2_lower_keil_v19.zip
+   SHA-256:
+   517EC2D98A653038F4B21B769770BD3E376F44D872A2C54E8C51210AE56828CA
+
+本配套版没有更改舍机编号、STM32引脚、定时器、PWM标定、串口引脚或波特率。
+
+业务动作只保留：
+
+1. 夹爪张开
+2. 夹爪夹紧
+3. 腕关节转到Front/取料侧
+4. 腕关节转到Back/载物台侧
+5. 四个动作的顺序演示
+
+已移除底盘、升降、载物台、OLED、按键、灯带、视觉和原复杂任务流程。
+
+注意：这是夹爪和腕关节的单机构教学/测试版。由于不包含升降机构，不能单独完成真实物料的上下抓取。
+
+
+二、压缩包目录结构
+
+claw_wrist_paired/
+|-- RaspberryPi_upper/
+|   |-- claw_wrist_control.py
+|   `-- requirements.txt
+|
+|-- STM32_lower/
+|   |-- USER/
+|   |   |-- ClawWristOnly.uvprojx
+|   |   `-- main.c
+|   |-- APP/
+|   |-- DRIVER/
+|   |-- CORE/
+|   |-- STM32F10x_FWLib/
+|   `-- OBJ/
+|
+`-- README.md
+
+
+三、原硬件映射
+
+1. 夹爪舍机
+
+   原编号：Servo2
+   STM32引脚：PA2
+   定时器：TIM5_CH3
+   夹爪张开：210°
+   夹爪夹紧：120°
+
+2. 腕关节舍机
+
+   原编号：Servo3
+   STM32引脚：PA3
+   定时器：TIM5_CH4
+   Front/取料侧：240°
+   Back/载物台侧：60°
+
+3. PWM参数
+
+   PWM频率：50Hz
+   PWM周期：20ms
+   0°脉宽：500us
+   270°脉宽：2500us
+   换算公式：pulse_us = 500 + angle * 2000 / 270
+
+原工程只定义Front和Back，没有定义实机坐标中的左转腕和右转腕。应在第一次实机通电后，根据机械安装方向确认Front/Back分别对应哪一侧，不需要改舍机角度。
+
+
+四、串口配置
+
+下位机保留原v19工程的两条串口通路。
+
+1. USART1
+
+   PA9  = USART1_TX
+   PA10 = USART1_RX
+   对应核心板的USB转串口通路。
+
+2. 重映射USART2
+
+   PD5 = USART2_TX
+   PD6 = USART2_RX
+   对应外接USB-TTL通路。
+
+两路串口参数相同：
+
+   波特率：115200
+   数据位：8位
+   停止位：1位
+   校验：无
+   硬件流控：无
+
+使用外接USB-TTL时的接线：
+
+   STM32 PD5 TX  -> USB-TTL RX
+   STM32 PD6 RX  -> USB-TTL TX
+   STM32 GND     -> USB-TTL GND
+
+TX必须接RX，RX必须接TX，GND必须共地。不连接USB-TTL的5V供电线。
+
+
+五、上下位机配套命令
+
+协议保留原工程的10字节格式：
+
+   FF + 8字节payload + FE
+
+1. 夹爪张开
+
+   上位机按键：O
+   命令字：0x10
+   完整帧：FF 10 00 00 00 00 00 00 00 FE
+
+2. 夹爪夹紧
+
+   上位机按键：C
+   命令字：0x11
+   完整帧：FF 11 00 00 00 00 00 00 00 FE
+
+3. 腕关节转到Front/取料侧
+
+   上位机按键：F
+   命令字：0x12
+   完整帧：FF 12 00 00 00 00 00 00 00 FE
+
+4. 腕关节转到Back/载物台侧
+
+   上位机按键：B
+   命令字：0x13
+   完整帧：FF 13 00 00 00 00 00 00 00 FE
+
+5. 四动作顺序演示
+
+   上位机按键：T
+   命令字：0x14
+   完整帧：FF 14 00 00 00 00 00 00 00 FE
+
+6. 重新握手
+
+   上位机按键：H
+   命令字：0xFD
+   完整帧：FF FD 00 00 00 00 00 00 00 FE
+
+7. 退出上位机
+
+   上位机按键：Q
+   Q只关闭树莓派上位机，不向STM32发送动作命令。
+
+STM32执行完成支持的命令后，统一回复：
+
+   FF 01 FE
+
+0x10至0x14使用的是原0x01至0x0E命令表未占用的编号。原协议中没有夹爪单独张开、夹紧和腕关节单独转动命令，因此配套版只在未占用的命令区增加了这五个动作码，没有改变原数据帧长度、帧头、帧尾或回执格式。
+
+
+六、STM32下位机编译和烧录
+
+1. 解压配套工程。
+
+2. 进入下位机目录：
+
+   claw_wrist_paired/STM32_lower
+
+3. 用Keil5打开：
+
+   USER/ClawWristOnly.uvprojx
+
+4. 在Keil5中执行：
+
+   Project -> Rebuild all target files
+
+5. 编译成功后，新HEX生成于：
+
+   OBJ/ClawWristOnly.hex
+
+6. 将新生成的ClawWristOnly.hex烧录到STM32F103ZET6。
+
+本配套包不使用原压缩包中的过期HEX，也不附带未经Keil编译的HEX。必须在本地Keil环境中重新编译。
+
+
+七、树莓派上位机运行方法
+
+1. 把压缩包中的RaspberryPi_upper目录复制到树莓派。
+
+2. 进入目录：
+
+   cd RaspberryPi_upper
+
+3. 安装Python串口库：
+
+   python3 -m pip install -r requirements.txt
+
+4. 先只打印协议帧，不打开串口：
+
+   python3 claw_wrist_control.py --print-frames
+
+5. 假设串口是/dev/ttyUSB0，启动实机控制：
+
+   python3 claw_wrist_control.py --port /dev/ttyUSB0
+
+6. 如果实际串口是/dev/ttyUSB1，则运行：
+
+   python3 claw_wrist_control.py --port /dev/ttyUSB1
+
+上位机打开串口后会自动发送握手帧。正常情况下应收到STM32回执FF 01 FE，随后即可使用O/C/F/B/T/H/Q控制键。
+
+
+八、建议的首次测试顺序
+
+1. 确保夹爪和腕关节扫过范围无人、无线束、无工具和无其他机械障碍。
+
+2. 烧录新HEX并给STM32上电。
+
+3. 上电后下位机会进入以下初始姿态：
+
+   夹爪张开
+   腕关节Back
+
+4. 运行树莓派上位机，确认握手成功并收到FF 01 FE。
+
+5. 按O，确认夹爪张开。
+
+6. 按C，确认夹爪夹紧。
+
+7. 按F，确认腕关节转到Front/取料侧。
+
+8. 按B，确认腕关节转到Back/载物台侧。
+
+9. 只有在四个单步动作均无机械干涉后，才按T测试四动作顺序演示。
+
+10. 测试完成后按Q退出树莓派上位机。
+
+
+九、验证情况
+
+1. 已校验最终压缩包中Keil工程的全部源文件路径，没有缺失的编译文件。
+
+2. 已对树莓派上位机进行Python语法检查。
+
+3. 已用模拟串口对握手、夹爪张开、夹爪夹紧、腕关节Front、腕关节Back和动作演示命令进行完整回执测试。
+
+4. 已逐项比对上位机和下位机的命令字，两端一致。
+
+5. 当前环境没有Keil/ARM工具链，因此下位机仍需在用户的Keil5环境中执行Rebuild并生成HEX。
+
+
+配套工程文件名：
+
+树莓派4B_STM32F103ZET6_夹爪腕关节_配套工程.zip
+

@@ -1,0 +1,98 @@
+# ============================================================
+# .gitignore —— 27工创赛（智能搬运小车）
+#
+# 原则：只把【源码 / 文档 / 标定成果】入库；
+#       编译产物、现场快照备份、大型二进制素材全部挡在外面。
+#   实测：全项目 442 MB → 忽略后入库约 55 MB。
+# ============================================================
+
+# ---------- Keil / MDK 编译产物（最大头：.o 149MB + .crf 131MB + .d）----------
+*.o
+*.crf
+*.d
+*.lst
+*.map
+*.htm
+*.lnp
+*.axf
+*.plg
+*.tra
+*.iex
+*.sct
+*.dep
+*.scvd
+*.__i
+OBJ/
+Objects/
+Listings/
+DebugConfig/
+RTE/
+JLinkLog.txt
+
+# Keil 的用户级配置（各人不同，别互相覆盖）
+*.uvguix.*
+*.uvoptx
+*.uvopt
+*.bak
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# ---------- Node（_pdf_extract 里的 pdf-parse）----------
+#   ⚠️ 只忽略 node_modules，**不要整目录忽略 `_pdf_extract/`** ——
+#      上游圆环识别库 `ring_center_detect_v2.py` 就在那里，部署脚本要取它。
+node_modules/
+package-lock.json
+
+# ---------- ★现场存档 / 备份 ----------
+#   Git 本身就是版本管理，这些东西不需要再存一份，
+#   而且每次 pull 都往 _field_backup/ 里堆，越滚越大。
+#   （用 Git 之后，改完就 commit，就不必再依赖它们了。）
+_field_backup/
+_field_snapshots/
+*.field_*.bak
+*.pre_pull*
+*.mine*
+*.mine[0-9]*
+*.orig
+*.rej
+
+# ---------- 大型二进制素材（CAD / 渲染 / 压缩包）----------
+#   这些不放 Git：要么用网盘，要么用 Git LFS（见 README）
+*.zip
+*.7z
+*.rar
+*.STEP
+*.stp
+*.SLDPRT
+*.SLDASM
+*.SLDDRW
+*.psd
+*.hdr
+*.exr
+*.stl
+*.3mf
+
+# ---------- 系统 / 编辑器 ----------
+Thumbs.db
+desktop.ini
+~$*
+.vscode/
+*.log
+
+# ============================================================
+# ★下面这些**故意不忽略**，它们是"成果"，必须入库：
+#   · *.py / *.c / *.h / *.ps1   —— 源码与部署脚本
+#   · *.md                        —— 全部设计/调试文档
+#   · color_profile.json          —— 现场调出来的颜色阈值
+#   · ring_calib.json             —— 圆环阈值 + 画面方向
+#   · *.hex                       —— 固件烧录成品（几百 KB，关键产物）
+#   · 发布/                       —— 交付包（约 6 MB）
+# ============================================================
+
+# ---------- ★私人财务：绝不公开（含公司名 / 金额 / 发票号）----------
+工创赛开票/
